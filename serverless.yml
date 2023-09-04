@@ -23,6 +23,9 @@ frameworkVersion: "3"
 provider:
   name: aws
   runtime: nodejs18.x
+  region: us-east-1
+  apiGateway:
+    shouldStartNameWithService: true
 
 # you can overwrite defaults here
 #  stage: dev
@@ -59,8 +62,18 @@ provider:
 #    - include-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  crearPedido:
+    handler: handler.crearPedido
+    events:
+      - http:
+          method: POST
+          path: /crearPedido
+  obtenerPedido:
+    handler: handler.obtenerPedido
+    events:
+      - http:
+          method: GET
+          path: /obtenerPedido
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
