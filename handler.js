@@ -1,12 +1,36 @@
 'use strict';
+const querystring = require('querystring');
+const mysql = require('mysql');
+
+const conexion = mysql.createConnection({
+  host: 'aws-proyectodfinal-cb.c9jwd0itecy9.us-east-1.rds.amazonaws.com',
+  user: 'admin',
+  port: '3306',
+  password: '12345678',
+  database: 'restaurante_cb',
+});
 
 module.exports.crearPedido = async (event) => {
+  const pedido = querystring.parse(event["body"])
+  const queryclient = "CALL InsertarPedido(?, ?, ?, ?);";
+  await new Promise((resolve, reject) => {
+    conexion.query(queryclient, [pedido.cliente_id, pedido.producto_id, pedido.cantidad, pedido.valor_total], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Crear pedido',
-        input: event,
+        message: "Pedido creado con exito",
+        Cliente: pedido.cliente_id,
+        Producto: pedido.producto_id,
+        Cantidad: pedido.cantidad,
+        "Valor Total": pedido.valor_total,
       },
       null,
       2
@@ -18,12 +42,22 @@ module.exports.crearPedido = async (event) => {
 };
 
 module.exports.obtenerPedido = async (event) => {
+  const pedidoId = event.queryStringParameters.id;
+  const queryPedido = "SELECT * FROM restaurante_cb.pedidos WHERE id = ?";
+  const results = await new Promise((resolve, reject) => {
+    conexion.query(queryPedido, [pedidoId], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Obtener pedido',
-        input: event,
+        pedido: results[0],
       },
       null,
       2
