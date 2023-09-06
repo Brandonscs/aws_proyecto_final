@@ -60,6 +60,8 @@ provider:
 #    - '!exclude-me-dir/**'
 #    - include-me.js
 #    - include-me-dir/**
+plugins:
+  - serverless-iam-roles-per-function 
 
 functions:
   crearPedido:
@@ -68,6 +70,13 @@ functions:
       - http:
           method: POST
           path: /crearPedido
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: 
+          - arn:aws:s3:::buket-respaldo-cb/*
   obtenerPedido:
     handler: handler.obtenerPedido
     events:
@@ -125,3 +134,14 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+resources:
+  Resources:
+    BackupBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: buket-respaldo-cb
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteOldFiles
+              Status: Enabled
+              ExpirationInDays: 2

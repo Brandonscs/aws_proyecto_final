@@ -1,6 +1,8 @@
 'use strict';
 const querystring = require('querystring');
 const mysql = require('mysql');
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
 const conexion = mysql.createConnection({
   host: 'aws-proyectodfinal-cb.c9jwd0itecy9.us-east-1.rds.amazonaws.com',
@@ -22,6 +24,23 @@ module.exports.crearPedido = async (event) => {
       }
     });
   });
+  
+  const timestamp = new Date().getTime();
+  const filename = `pedido_${timestamp}.json`;
+
+  const pedidoData = {
+    Cliente: pedido.cliente_id,
+    Producto: pedido.producto_id,
+    Cantidad: pedido.cantidad,
+    "Valor Total": pedido.valor_total,
+  };
+
+  await s3.putObject({
+    Bucket: 'buket-respaldo-cb',
+    Key: filename,
+    Body: JSON.stringify(pedidoData),
+  }).promise();
+
   return {
     statusCode: 200,
     body: JSON.stringify(
