@@ -2,7 +2,9 @@
 const querystring = require('querystring');
 const mysql = require('mysql');
 const AWS = require('aws-sdk');
+
 const s3 = new AWS.S3();
+const sqs = new AWS.SQS();
 
 const conexion = mysql.createConnection({
   host: 'aws-proyectodfinal-cb.c9jwd0itecy9.us-east-1.rds.amazonaws.com',
@@ -41,6 +43,14 @@ module.exports.crearPedido = async (event) => {
     Body: JSON.stringify(pedidoData),
   }).promise();
 
+  // Enviar el pedido a una cola SQS
+  const params = {
+    MessageBody: JSON.stringify(pedidoData),
+    QueueUrl: 'https://sqs.us-east-1.amazonaws.com/667168568942/cola-cb',
+  };
+
+  await sqs.sendMessage(params).promise();
+
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -55,9 +65,6 @@ module.exports.crearPedido = async (event) => {
       2
     ),
   };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
 module.exports.obtenerPedido = async (event) => {
