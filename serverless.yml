@@ -12,7 +12,7 @@ provider:
 plugins:
   - serverless-iam-roles-per-function 
 
-# Comentarios para describir las secciones principales
+# Funciones
 # ================================================
 functions:
   # Función para crear un pedido
@@ -63,6 +63,7 @@ resources:
             - Id: DeleteOldFiles
               Status: Enabled
               ExpirationInDays: 2
+
     # Define una cola SQS
     MyQueue:
       Type: AWS::SQS::Queue
@@ -70,3 +71,30 @@ resources:
         QueueName: cola-cb
         MessageRetentionPeriod: 1209600
         DelaySeconds: 15
+
+    # Definición de la instancia RDS
+    RDSDatabase:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBName: restaurante_cb
+        AllocatedStorage: 20
+        DBInstanceClass: db.t2.micro
+        Engine: mysql
+        EngineVersion: 5.7
+        MasterUsername: admin
+        MasterUserPassword: db2023cb
+        PubliclyAccessible: true
+        StorageType: gp2
+        MultiAZ: false
+        VPCSecurityGroups:
+          - sg-055af2e4cb3a23cd4
+
+    # Regla de seguridad de grupo de seguridad VPC
+    RDSSecurityGroupIngress:
+      Type: AWS::EC2::SecurityGroupIngress
+      Properties:
+        GroupId: sg-055af2e4cb3a23cd4
+        IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        CidrIp: 0.0.0.0/0

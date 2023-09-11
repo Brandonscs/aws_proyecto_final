@@ -8,10 +8,10 @@ const sqs = new AWS.SQS();
 const ses = new AWS.SES({ region: 'us-east-1' });
 
 const conexion = mysql.createConnection({
-  host: 'aws-proyectodfinal-cb.c9jwd0itecy9.us-east-1.rds.amazonaws.com',
+  host: 'aws-proyectofinal-cb-dev-rdsdatabase-iibxlx1nmpww.c9jwd0itecy9.us-east-1.rds.amazonaws.com',
   user: 'admin',
   port: '3306',
-  password: '12345678',
+  password: 'db2023cb',
   database: 'restaurante_cb',
 });
 
