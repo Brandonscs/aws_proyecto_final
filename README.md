@@ -14,10 +14,10 @@ npm install -g serverless
 
 3. **Módulos y Recursos**: Ejecuta los siguientes comandos para instalar los módulos y recursos necesarios para el proyecto:
 
-npm install --save querystring
-npm install mysql
-npm install aws-sdk --save
-npm install --save serverless-iam-roles-per-function
+- npm install --save querystring
+- npm install mysql
+- npm install aws-sdk --save
+- npm install --save serverless-iam-roles-per-function
 
 ## Despliegue:
 
